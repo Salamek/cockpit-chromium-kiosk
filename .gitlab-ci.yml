@@ -40,8 +40,10 @@ repoupdate:
   stage: deploy
   tags:
     - docker
+  only:
+    - tags
   rules:
-    - if: '$CI_COMMIT_TAG =~ /^v?[0-9]+\.[0-9]+\.[0-9]+$/ && $CI_COMMIT_REF_PROTECTED == "true"'
+    - if: '$CI_COMMIT_TAG'
   resource_group: salamek-package-repository
   variables:
     GIT_STRATEGY: none
@@ -54,9 +56,8 @@ repoupdate:
   before_script:
     - command -v ssh-agent >/dev/null || (apt-get update -qy && apt-get install -y openssh-client)
     - eval "$(ssh-agent -s)"
-    - chmod 600 "$SSH_PRIVATE_KEY"
-    - ssh-add "$SSH_PRIVATE_KEY"
+    - printf '%s\n' "$SSH_PRIVATE_KEY" | ssh-add -
   script:
-    - scp -o BatchMode=yes -o StrictHostKeyChecking=yes -o UserKnownHostsFile="$SSH_KNOWN_HOSTS" deb_dist/*.deb "$PACKAGE_REPO_SSH:/var/www/repository.salamek.cz/cache/deb/pub/all/"
-    - scp -o BatchMode=yes -o StrictHostKeyChecking=yes -o UserKnownHostsFile="$SSH_KNOWN_HOSTS" archlinux/*.pkg.tar.zst "$PACKAGE_REPO_SSH:/var/www/repository.salamek.cz/www/arch/pub/any/"
-    - ssh -o BatchMode=yes -o StrictHostKeyChecking=yes -o UserKnownHostsFile="$SSH_KNOWN_HOSTS" "$PACKAGE_REPO_SSH" '/var/www/repository.salamek.cz/deb-pub-update.sh && /var/www/repository.salamek.cz/arch-pub-update.sh'
+    - scp -o BatchMode=yes -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null deb_dist/*.deb "$PACKAGE_REPO_SSH:/var/www/repository.salamek.cz/cache/deb/pub/all/"
+    - scp -o BatchMode=yes -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null archlinux/*.pkg.tar.zst "$PACKAGE_REPO_SSH:/var/www/repository.salamek.cz/www/arch/pub/any/"
+    - ssh -o BatchMode=yes -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null "$PACKAGE_REPO_SSH" '/var/www/repository.salamek.cz/deb-pub-update.sh && /var/www/repository.salamek.cz/arch-pub-update.sh'

@@ -50,8 +50,8 @@ sudo pacman -U cockpit-chromium-kiosk-0.1.0-1-any.pkg.tar.zst
 
 ## Release with GitLab CI
 
-GitLab builds both packages and saves them as job artifacts. Use runners with the `debian` and `archlinux` tags. A protected version tag such as `v0.1.0` also runs the `docker`-tagged deployment job, which uploads both packages and refreshes the Salamek Debian and Arch repositories.
+GitLab builds both packages and saves them as job artifacts. Use runners with the `debian` and `archlinux` tags. A version tag such as `0.1.0` also runs the `docker`-tagged deployment job, which uploads both packages and refreshes the Salamek Debian and Arch repositories.
 
 Run `version status` to check the current version. From a clean working tree, run `version +` for a patch release or `version 0.2.0` to set a specific version. The command updates the three version files, commits the change, tags it, and pushes the branch and tag to `origin`. The tag must also reach GitLab if that project mirrors a separate remote.
 
-Set the protected file variables `SSH_PRIVATE_KEY` and `SSH_KNOWN_HOSTS` in GitLab for the package repository. The deployment runner needs network access to `PACKAGE_REPO_SSH`.
+Set `SSH_PRIVATE_KEY` in GitLab to the private key text. If this variable is protected, GitLab supplies it only to pipelines on protected refs. The deployment runner needs network access to `PACKAGE_REPO_SSH`.
