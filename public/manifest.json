@@ -1,0 +1,9 @@
+{
+  "name": "cockpit-chromium-kiosk",
+  "tools": {
+    "index": {
+      "label": "Chromium Kiosk",
+      "path": "index.html"
+    }
+  }
+}

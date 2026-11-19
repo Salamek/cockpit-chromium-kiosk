@@ -1,0 +1,57 @@
+:root {
+  color-scheme: light dark;
+  --canvas: #f0f0f0;
+  --surface: #fff;
+  --text: #151515;
+  --muted: #4f5255;
+  --border: #8a8d90;
+  --line: #d2d2d2;
+  --accent: #005eae;
+  --accent-hover: #00457e;
+  --error: #a30000;
+  font: 1rem/1.5 system-ui, sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --canvas: #151515;
+    --surface: #212427;
+    --text: #f0f0f0;
+    --muted: #c7c9cb;
+    --border: #8a8d90;
+    --line: #45484b;
+    --accent: #0066bf;
+    --accent-hover: #00539b;
+    --error: #ff9c9c;
+  }
+}
+* { box-sizing: border-box; }
+body { margin: 0; color: var(--text); background: var(--canvas); }
+main { max-width: 78rem; margin: 0 auto; padding: clamp(1rem, 3vw, 2rem); }
+header, .actions { display: flex; align-items: center; gap: .75rem; flex-wrap: wrap; }
+header { justify-content: space-between; margin-bottom: 1rem; }
+h1 { font-size: 1.6rem; font-weight: 600; margin: 0; }
+h2 { font-size: 1.1rem; font-weight: 600; margin: 0 0 1rem; }
+.path, small { color: var(--muted); }
+.path { font: .85rem ui-monospace, monospace; margin: .35rem 0 0; }
+fieldset { border: 0; margin: 0; padding: 0; min-width: 0; }
+section { background: var(--surface); border: 1px solid var(--line); margin-bottom: 1rem; padding: 1.25rem; }
+.grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 17rem), 1fr)); gap: 1rem 1.5rem; }
+label { display: block; font-weight: 600; margin-bottom: .25rem; }
+input, select, textarea, button { color: inherit; font: inherit; }
+input, select, textarea {
+  width: 100%; min-height: 2.25rem; padding: .3rem .5rem;
+  border: 1px solid var(--line); border-bottom-color: var(--border); background: var(--surface);
+}
+textarea { display: block; resize: vertical; }
+small { display: block; margin-top: .25rem; }
+button {
+  border: 1px solid var(--border); border-radius: .2rem;
+  background: var(--surface); padding: .35rem .9rem; cursor: pointer;
+}
+button.primary { background: var(--accent); color: white; border-color: var(--accent); }
+button.primary:hover:enabled { background: var(--accent-hover); }
+button:disabled { opacity: .55; cursor: default; }
+:focus-visible { outline: 2px solid #2584d6; outline-offset: 2px; }
+#status { margin: 0 0 1rem; }
+#status:empty { display: none; }
+#status.error { color: var(--error); }
