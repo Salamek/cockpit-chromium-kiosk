@@ -1,0 +1,16 @@
+Source: cockpit-chromium-kiosk
+Section: admin
+Priority: optional
+Maintainer: Adam Schubert <adam.schubert@sg1-game.net>
+Build-Depends: debhelper-compat (= 13), node-typescript
+Standards-Version: 4.7.0
+Rules-Requires-Root: no
+Homepage: https://github.com/Salamek/cockpit-chromium-kiosk
+
+Package: cockpit-chromium-kiosk
+Architecture: all
+Depends: ${misc:Depends}, cockpit-bridge, python3, python3-yaml
+Recommends: chromium-kiosk
+Description: Cockpit tool for configuring Chromium Kiosk
+ Edit window, display, input, and browser settings in the Chromium Kiosk
+ configuration file through the Cockpit web console.

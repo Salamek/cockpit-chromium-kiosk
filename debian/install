@@ -1,0 +1,2 @@
+dist/*.js usr/share/cockpit/cockpit-chromium-kiosk
+public/* usr/share/cockpit/cockpit-chromium-kiosk

@@ -1,0 +1,21 @@
+# Maintainer: Adam Schubert <adam.schubert@sg1-game.net>
+pkgname=cockpit-chromium-kiosk
+pkgver=0.1.0
+pkgrel=1
+pkgdesc='Cockpit tool for configuring Chromium Kiosk'
+arch=('any')
+url='https://github.com/Salamek/cockpit-chromium-kiosk'
+license=('GPL-3.0-only')
+depends=('cockpit' 'python' 'python-yaml')
+makedepends=('typescript')
+optdepends=('chromium-kiosk: provides the kiosk configuration on the managed host')
+
+build() {
+    local project="${startdir}/.."
+    tsc --project "${project}/tsconfig.json" --outDir "${srcdir}/dist"
+}
+
+package() {
+    install -Dm644 -t "${pkgdir}/usr/share/cockpit/${pkgname}" \
+        "${srcdir}"/dist/*.js "${startdir}"/../public/*
+}

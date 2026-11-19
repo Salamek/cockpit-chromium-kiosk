@@ -1,2 +1,11 @@
 /dist/
 /node_modules/
+/archlinux/pkg/
+/archlinux/src/
+/archlinux/*.pkg.tar.*
+/deb_dist/
+/debian/.debhelper/
+/debian/cockpit-chromium-kiosk/
+/debian/debhelper-build-stamp
+/debian/files
+/debian/*.substvars

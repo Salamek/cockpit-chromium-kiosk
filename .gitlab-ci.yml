@@ -1,0 +1,62 @@
+stages:
+  - package
+  - deploy
+
+package:debian:
+  stage: package
+  tags:
+    - debian
+  script:
+    - apt-get update -qy
+    - apt-get install -y build-essential debhelper node-typescript
+    - dpkg-buildpackage -us -uc -b
+    - version="$(dpkg-parsechangelog --show-field Version)"
+    - test -z "${CI_COMMIT_TAG:-}" || test "${CI_COMMIT_TAG#v}" = "$version"
+    - mkdir -p deb_dist
+    - mv "../cockpit-chromium-kiosk_${version}_all.deb" deb_dist/
+  artifacts:
+    paths:
+      - deb_dist/*.deb
+    expire_in: 1 week
+
+package:archlinux:
+  stage: package
+  tags:
+    - archlinux
+  script:
+    - pacman -Syu --noconfirm --needed base-devel typescript cockpit python-yaml
+    - id package >/dev/null 2>&1 || useradd -m -s /bin/bash package
+    - chown -R package archlinux
+    - cd archlinux
+    - runuser -u package -- makepkg --cleanbuild --force
+    - version="$(bash -c 'source ./PKGBUILD; echo "$pkgver"')"
+    - test -z "${CI_COMMIT_TAG:-}" || test "${CI_COMMIT_TAG#v}" = "$version"
+  artifacts:
+    paths:
+      - archlinux/*.pkg.tar.zst
+    expire_in: 1 week
+
+repoupdate:
+  stage: deploy
+  tags:
+    - docker
+  rules:
+    - if: '$CI_COMMIT_TAG =~ /^v?[0-9]+\.[0-9]+\.[0-9]+$/ && $CI_COMMIT_REF_PROTECTED == "true"'
+  resource_group: salamek-package-repository
+  variables:
+    GIT_STRATEGY: none
+    PACKAGE_REPO_SSH: 'www-data@192.168.1.27'
+  needs:
+    - job: package:debian
+      artifacts: true
+    - job: package:archlinux
+      artifacts: true
+  before_script:
+    - command -v ssh-agent >/dev/null || (apt-get update -qy && apt-get install -y openssh-client)
+    - eval "$(ssh-agent -s)"
+    - chmod 600 "$SSH_PRIVATE_KEY"
+    - ssh-add "$SSH_PRIVATE_KEY"
+  script:
+    - scp -o BatchMode=yes -o StrictHostKeyChecking=yes -o UserKnownHostsFile="$SSH_KNOWN_HOSTS" deb_dist/*.deb "$PACKAGE_REPO_SSH:/var/www/repository.salamek.cz/cache/deb/pub/all/"
+    - scp -o BatchMode=yes -o StrictHostKeyChecking=yes -o UserKnownHostsFile="$SSH_KNOWN_HOSTS" archlinux/*.pkg.tar.zst "$PACKAGE_REPO_SSH:/var/www/repository.salamek.cz/www/arch/pub/any/"
+    - ssh -o BatchMode=yes -o StrictHostKeyChecking=yes -o UserKnownHostsFile="$SSH_KNOWN_HOSTS" "$PACKAGE_REPO_SSH" '/var/www/repository.salamek.cz/deb-pub-update.sh && /var/www/repository.salamek.cz/arch-pub-update.sh'

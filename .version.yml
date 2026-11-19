@@ -1,0 +1,15 @@
+GIT:
+  AUTO_COMMIT: true
+  AUTO_TAG: true
+  AUTO_PUSH: true
+  COMMIT_MESSAGE: 'New version {version}'
+
+REGEXPS:
+  package-json: '(?m)^[ \t]*"version"[ \t]*:[ \t]*"(?P<version>[0-9]+\.[0-9]+\.[0-9]+)"'
+  pkgbuild: '(?m)^pkgver=(?P<version>[0-9]+\.[0-9]+\.[0-9]+)$'
+  debian: '\Acockpit-chromium-kiosk \((?P<version>[0-9]+\.[0-9]+\.[0-9]+)\)'
+
+VERSION_FILES:
+  package.json: package-json
+  archlinux/PKGBUILD: pkgbuild
+  debian/changelog: debian
